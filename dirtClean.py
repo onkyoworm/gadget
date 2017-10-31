@@ -37,4 +37,11 @@ if __name__ == '__main__':
 			else:
 				swap_set.add(j)
 	f2.close()
-	print swap_set
+	
+	#deal the new dirt 
+	name = 'output/'+str(time.strftime('%Y%m%d-%H%M%S', time.localtime(time.time()))) + ".txt"
+	fd = open(name, 'a+')
+	for dirt in swap_set: 
+		fd.writelines(dirt)
+	fd.close()
+	
