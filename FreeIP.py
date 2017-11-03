@@ -16,14 +16,15 @@ header_xici = {
 	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 	'Accept-Language': 'zh,zh-CN;q=0.8,en-US;q=0.5,en;q=0.3',
 	'Accept-Encoding': 'gzip, deflate',
-	'Referer': 'https://www.baidu.com/link?url=OpFsf-2Fin_mFihjs8fy7Amlw-T7Cvk59S4XB7Cso6nuuWrjiSgIADhTvet2RKQo&ie=utf-8&f=8&tn=monline_3_dg&wd=%E5%85%8D%E8%B4%B9%E4%BB%A3%E7%90%86&oq=%25E6%25B5%25B7%25E8%25B4%25BC%25E7%258E%258B&rqlang=cn&inputT=1284',
-	'Cookie': 'Hm_lvt_0cf76c77469e965d2957f0553e6ecf59=1509614635,1509614732; _free_proxy_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFVEkiJWJkZTU1MjJiMGFkZjA2YWI4NWU2ZjQzOGY0NGRhZTY3BjsAVEkiEF9jc3JmX3Rva2VuBjsARkkiMWJnd0w3SXF1WElhaEg1Nnl5bDE1RDB2Ti9vTUFPQW5Bc3FYMGtaVXlFbU09BjsARg%3D%3D--f7b129ed0e97eff9e726e90c33f48fe0e462595e; Hm_lpvt_0cf76c77469e965d2957f0553e6ecf59=1509614732',
+	'Cookie':'_free_proxy_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFVEkiJWEzMjM4ZTBhOWRjNzMwM2YwOTY4NjU4MjAwMDFjZmJmBjsAVEkiEF9jc3JmX3Rva2VuBjsARkkiMWxxU0psR21ZWFF4emNBWDg5ZDdxVkoxTnNjZXgyaGFUNjBiTDJiNklUZGs9BjsARg%3D%3D--4bde4ddec2e94c160ce16d183d6ab1d722b0d2bb; Hm_lvt_0cf76c77469e965d2957f0553e6ecf59=1509696149; Hm_lpvt_0cf76c77469e965d2957f0553e6ecf59=1509696149',
 	'Connection': 'keep-alive',
 	'Upgrade-Insecure-Requests': '1',
-	'If-None-Match': 'W/"530c4e1c103a5b430458ff4d954511b5"',
+	'If-None-Match': 'W/"cb19fedc96a8d69fbd9a357a170afba0"',
 	'Cache-Control': 'max-age=0'
 
 }
+
+
 def xici(url1):
 	surf = requests.get(url=url1, headers=header_xici)
 	parse = BeautifulSoup(surf.content, 'lxml')
@@ -55,5 +56,28 @@ def xici(url1):
 	# 	print cc
 	print get_IP[2]
 
-if __name__ == '__main__':
-	xici(url1)
+def httpdaili(url2):
+
+	#divide into three parts
+	analyze = BeautifulSoup(httpdaili_text, 'lxml')
+	
+	#part1--Chinese's http proxy
+	part1 = analyze.find('li', attrs={'style': re.compile('position: absolute; left: 10.5')})
+
+	#format of output
+	name_list = list()
+	for i in part1.tr.children:
+		if i != '\n':
+			name_list.append(i.text) 
+
+	#traverse to get the ip
+	ip_list = list()
+	for i in part1.table.children:
+		if i != '\n':
+			cc = BeautifulSoup(str(i), 'lxml')
+	#aa = BeautifulSoup(str(ip_list[2]), 'lxml')
+	#print aa.text
+if __name__ == '__main__': 
+
+	#xici(url1)
+	httpdaili(url2)
