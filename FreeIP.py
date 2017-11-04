@@ -62,21 +62,38 @@ def httpdaili(url2):
 	analyze = BeautifulSoup(httpdaili_text, 'lxml')
 	
 	#part1--Chinese's http proxy
+	infor_list1 = list()										#include the name and the ip's detail
+
+	#locate the informations
 	part1 = analyze.find('li', attrs={'style': re.compile('position: absolute; left: 10.5')})
-
-	#format of output
-	name_list = list()
-	for i in part1.tr.children:
-		if i != '\n':
-			name_list.append(i.text) 
-
-	#traverse to get the ip
-	ip_list = list()
 	for i in part1.table.children:
 		if i != '\n':
-			cc = BeautifulSoup(str(i), 'lxml')
-	#aa = BeautifulSoup(str(ip_list[2]), 'lxml')
-	#print aa.text
+			infor_soup = BeautifulSoup(str(i), 'lxml')
+			#add all infor
+			infor_list1.append(infor_soup)
+
+	length1 = len(infor_list1)
+	for i in range(length1):
+		for j in infor_list1[i]:
+			#print j.get_text()
+			pass
+
+	#print infor_list1[0].get_text()							
+	#infor_list1[0] is the format of name
+	#others is ip's detail
+	for i in range(1, length1):
+		for j in infor_list1[i]:
+			#print j.get_text()
+			pass
+
+	#######################################################################################################		
+
+	#part2--foreign htt proxy
+	infor_list1 = list()
+
+	#locate the informations
+	part2 = analyze.find('li', attrs={'style': re.compile('position: absolute; left: 410.5px; top: 0px;')})
+	print part2
 if __name__ == '__main__': 
 
 	#xici(url1)
