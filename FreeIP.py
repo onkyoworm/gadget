@@ -23,6 +23,7 @@ header_xici = {
 	'If-None-Match': 'W/"cb19fedc96a8d69fbd9a357a170afba0"',
 	'Cache-Control': 'max-age=0'}
 
+header_kuaidaili = {}
 header_httpdaili = {
 	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0',
 	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
