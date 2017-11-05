@@ -72,8 +72,8 @@ def kuaidaili(url2):
 	
 	#this website divide into two parts: anonymity and normal
 	
-	name_list = list()
-	#part1--anonymity
+	infor_list = list()
+	#part1--anonymity proxy
 	#anon = requests.get(url2 + 'inha', headers=header_kuaidaili)
 	anon_soup = BeautifulSoup(kuaidailiinha, 'lxml')
 
@@ -83,15 +83,34 @@ def kuaidaili(url2):
 		if i != '\n':
 			infor_soup = BeautifulSoup(str(i), 'lxml')
 			#add infor
-			name_list.append(infor_soup)
-	#name_list[0] is the format of output		
-	#print name_list[0].get_text()
+			infor_list.append(infor_soup)
+	#infor_list[0] is the format of output		
+	#print infor_list[0].get_text()
 
-	length1 = len(name_list)
+	#others is proxy's detail
+	length1 = len(infor_list)
 	for i in range(1, length1):
-		for j in name_list[i]:
+		for j in infor_list[i]:
 			print j.get_text()
 
+	infor_list2 = list()
+	#part2--normal proxy
+	#norm = requests.get(url2 + 'intr', headers=header_kuaidaili)
+	norm_soup = BeautifulSoup(normal, 'lxml')
+
+	#locate the table
+	part2 = norm_soup.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
+	for i in part2.children:
+		if i != '\n':
+			infor_soup2 = BeautifulSoup(str(i), 'lxml')
+			#for the same format of output, so do not add name again
+
+	#others is proxy's detail
+	length2 = len(infor_list2)
+	for i in range(1, length2):
+		for j in infor_list2[i]:
+			print j.get_text()
+			
 def httpdaili(url3):
 
 	#for avoid banned we store the raw html file
