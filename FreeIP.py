@@ -36,6 +36,7 @@ header_httpdaili = {
 	'If-None-Match': "4a3d552c9c4bd31:a048",
 	'Cache-Control': 'max-age=0'}
 
+
 def xici(url1):
 	surf = requests.get(url=url1, headers=header_xici)
 	parse = BeautifulSoup(surf.content, 'lxml')
@@ -68,7 +69,29 @@ def xici(url1):
 	print get_IP[2]
 
 def kuaidaili(url2):
-	pass
+	
+	#this website divide into two parts: anonymity and normal
+	
+	name_list = list()
+	#part1--anonymity
+	#anon = requests.get(url2 + 'inha', headers=header_kuaidaili)
+	anon_soup = BeautifulSoup(kuaidailiinha, 'lxml')
+
+	#locate the table
+	part1 = anon_soup.find('table', attrs={'class' : re.compile('')})
+	for i in part1.children:
+		if i != '\n':
+			infor_soup = BeautifulSoup(str(i), 'lxml')
+			#add infor
+			name_list.append(infor_soup)
+	#name_list[0] is the format of output		
+	#print name_list[0].get_text()
+
+	length1 = len(name_list)
+	for i in range(1, length1):
+		for j in name_list[i]:
+			print j.get_text()
+
 def httpdaili(url3):
 
 	#for avoid banned we store the raw html file
