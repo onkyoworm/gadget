@@ -67,6 +67,8 @@ def xici(url1):
 	# 	print cc
 	print get_IP[2]
 
+def kuaidaili(url2):
+	pass
 def httpdaili(url3):
 
 	#for avoid banned we store the raw html file
@@ -156,4 +158,5 @@ def httpdaili(url3):
 			
 if __name__ == '__main__':
 	#xici(url1)
-	httpdaili(url3)
+	kuaidaili(url2)
+	#httpdaili(url3)
