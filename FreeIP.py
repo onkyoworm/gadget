@@ -24,6 +24,7 @@ header_xici = {
 	'Cache-Control': 'max-age=0'}
 
 header_kuaidaili = {}
+
 header_httpdaili = {
 	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0',
 	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -36,6 +37,7 @@ header_httpdaili = {
 	'If-None-Match': "4a3d552c9c4bd31:a048",
 	'Cache-Control': 'max-age=0'}
 
+header_ip66 = {}
 
 def xici(url1):
 	surf = requests.get(url=url1, headers=header_xici)
@@ -74,8 +76,9 @@ def kuaidaili(url2):
 	
 	infor_list = list()
 	#part1--anonymity proxy
+	anon = urllib2.urlopen(url2 + 'inha').read()
 	#anon = requests.get(url2 + 'inha', headers=header_kuaidaili)
-	anon_soup = BeautifulSoup(kuaidailiinha, 'lxml')
+	anon_soup = BeautifulSoup(anon, 'lxml')
 
 	#locate the table
 	part1 = anon_soup.find('table', attrs={'class' : re.compile('')})
@@ -96,7 +99,8 @@ def kuaidaili(url2):
 	infor_list2 = list()
 	#part2--normal proxy
 	#norm = requests.get(url2 + 'intr', headers=header_kuaidaili)
-	norm_soup = BeautifulSoup(normal, 'lxml')
+	norm = urllib2.urlopen(url2 + 'inha').read()
+	norm_soup = BeautifulSoup(norm, 'lxml')
 
 	#locate the table
 	part2 = norm_soup.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
@@ -115,7 +119,7 @@ def httpdaili(url3):
 
 	#for avoid banned we store the raw html file
 
-	surf = requests.get(url=url2, headers=header_httpdaili)
+	surf = requests.get(url=url3, headers=header_httpdaili)
 	surf = urllib2.urlopen(url3).read()
 	with open('123.html', 'w+') as f:
 		f.write(surf)
@@ -197,8 +201,27 @@ def httpdaili(url3):
 		for j in infor_list3[i]:
 			#print j.get_text()
 			pass
+
+def ip66(url4):
+	#this website is a little easy
+	infor_list = list()
+
+	#locate the information
+	surf = urllib2.urlopen(url4).read()
+	surf_soup = BeautifulSoup(surf, 'lxml')
+
+	infor = surf_soup.find('table', attrs= {'width': re.compile('100%')})
+	print type(infor)
+	for i in infor.children:
+		if i != '\n':
+			infor_soup = BeautifulSoup(str(i), 'lxml')
+			infor_list.append(infor_soup)
+			
+	for i in infor_list:
+		print i.get_text()
 			
 if __name__ == '__main__':
 	#xici(url1)
-	kuaidaili(url2)
+	#kuaidaili(url2)
 	#httpdaili(url3)
+	ip66(url4)
