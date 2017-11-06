@@ -40,36 +40,23 @@ header_httpdaili = {
 header_ip66 = {}
 
 def xici(url1):
+
+	ip_list = list()
+
 	surf = requests.get(url=url1, headers=header_xici)
-	parse = BeautifulSoup(surf.content, 'lxml')
-	print surf.status_code
-
-	#xici_format
-	output_format_list = list()										#format use for output standard
-
-	search_table =  parse.find_all(name='table')					#find the table store data
-	data = BeautifulSoup(str(search_table[0]), 'lxml')
-
-	output_format =  data.find_all('tr', attrs={'class':re.compile('subtitle')})		#get the format used for output
-
-	#输出格式 共八个
-	#国家 代理IP地址 端口 服务器地址 是否匿名 类型 存活时间 验证时间
-	for i in output_format[0].text:
-		output_format_list.append(i)
-
-	#deal IP's info
-	get_IP = data.find_all('tr', attrs={'class':re.compile('(odd)|( )')})			#ps here is a space
-	# for j in get_IP[0]:
-	# 	print j.string, 
-	#print type(len(get_IP))
-	# for j in range(len(get_IP)):
-	# 	# for k in get_IP[j]:
-	# 	# 	#print '{0}--{1}--{2}--{3}--{4}--{5}--{6}--{7}'.format(get_IP[0],get_IP[1],get_IP[2],get_IP[3],get_IP[4],get_IP[5],get_IP[6],get_IP[7])
-	# 	# 	print k.string
-	# 	cc =  get_IP[j].text
-	# 	print cc
-	print get_IP[2]
-
+	surf_soup = BeautifulSoup(surf.content, 'lxml')
+	infor = surf_soup.find('table', attrs={'id': re.compile('ip_list')})
+	for i in infor.children:
+		if i != '\n':
+			infor_soup = BeautifulSoup(str(i), 'lxml')
+			ip_list.append(infor_soup)
+	#warning!
+	#ip_list[0] is not the format of output
+	#ip_list[1] is the format
+	#print ip_list[1].get_text() 
+	for i in range(1,len(ip_list)):
+		for j in ip_list:
+			print j.get_text()
 def kuaidaili(url2):
 	
 	#this website divide into two parts: anonymity and normal
@@ -211,7 +198,7 @@ def ip66(url4):
 	surf_soup = BeautifulSoup(surf, 'lxml')
 
 	infor = surf_soup.find('table', attrs= {'width': re.compile('100%')})
-	print type(infor)
+
 	for i in infor.children:
 		if i != '\n':
 			infor_soup = BeautifulSoup(str(i), 'lxml')
@@ -221,7 +208,7 @@ def ip66(url4):
 		print i.get_text()
 			
 if __name__ == '__main__':
-	#xici(url1)
+	xici(url1)
 	#kuaidaili(url2)
 	#httpdaili(url3)
-	ip66(url4)
+	#ip66(url4)
