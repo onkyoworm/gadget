@@ -3,6 +3,8 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import urllib2
+import xlwt
+import xlrd
 
 
 url1 = 'http://www.xicidaili.com/'								#西刺
@@ -39,6 +41,8 @@ header_httpdaili = {
 
 header_ip66 = {}
 
+'''
+#each website's crawler
 def xici(url1):
 
 	ip_list = list()
@@ -57,6 +61,7 @@ def xici(url1):
 	for i in range(1,len(ip_list)):
 		for j in ip_list:
 			print j.get_text()
+	return ip_list
 def kuaidaili(url2):
 	
 	#this website divide into two parts: anonymity and normal
@@ -100,8 +105,7 @@ def kuaidaili(url2):
 	length2 = len(infor_list2)
 	for i in range(1, length2):
 		for j in infor_list2[i]:
-			print j.get_text()
-			
+			print j.get_text()		
 def httpdaili(url3):
 
 	#for avoid banned we store the raw html file
@@ -188,9 +192,8 @@ def httpdaili(url3):
 		for j in infor_list3[i]:
 			#print j.get_text()
 			pass
-
 def ip66(url4):
-	#this website is a little easy
+	
 	infor_list = list()
 
 	#locate the information
@@ -200,15 +203,67 @@ def ip66(url4):
 	infor = surf_soup.find('table', attrs= {'width': re.compile('100%')})
 
 	for i in infor.children:
-		if i != '\n':
-			infor_soup = BeautifulSoup(str(i), 'lxml')
-			infor_list.append(infor_soup)
-			
+		infor_soup = BeautifulSoup(str(i), 'lxml')
+		infor_list.append(infor_soup)
+		
+	# in this website, if you use get_text() directly there will be some problem while display	
+	# for i in infor_list:
+	# 	print i.get_text()
+	match = re.compile(r'<tr>(.*?)</tr>')
 	for i in infor_list:
-		print i.get_text()
+		print i
+		print str(match.findall(str(i))) + '2333'
+'''
+
+#function of check & get the website
+def pre_work():
+	url1_check = requests.get(url1, headers= header_xici)
+	url2_check = requests.get(url2, headers= header_kuaidaili)
+	url3_check = requests.get(url3, headers= header_httpdaili)
+	url4_check = requests.get(url4, headers= header_ip66)
+
+	#dict for store the status_code
+	status_code_dict = dict()
+	status_code_dict['url1'] = url1_check.status_code
+	status_code_dict['url2'] = url2_check.status_code
+	status_code_dict['url3'] = url3_check.status_code
+	status_code_dict['url4'] = url4_check.status_code
+	for key, value in status_code_dict.items():
+		print key + str(value)
+		if str(value) != '200':
+			print({0} + "'s status_code is not 200, please check").format(str(key))
+
+	#dirt for store the page
+	page_dirt = dict()
+	page_dirt['url1'] = url1_check.content
+	page_dirt['url2'] = url2_check.content
+	page_dirt['url3'] = url3_check.content
+	page_dirt['url4'] = url4_check.content
+
+	#localize the page
+	with open('url1_page.html', 'w+') as f:
+		f.writelines(url1_check.content)
+	with open('url2_page.html', 'w+') as f:
+		f.writelines(url2_check.content)
+	with open('url3_page.html', 'w+') as f:
+		f.writelines(url3_check.content)
+	with open('url4_page.html', 'w+') as f:
+		f.writelines(url4_check.content)
+
+#define the format of output
+def output_format(target_list, current_function_name):
+	workbook = xlwt.Workbook(encoding= 'utf-8')
+	worksheet = workbook.add_sheet(current_function_name)
+	for target in target_list:
+		for i in range(len(target_list)):
+			for j in range(len(target_list)):
+				worksheet.write(i, j, target.get_text())
+	workbook.save('12.xls')
 			
 if __name__ == '__main__':
-	xici(url1)
+	#xici(url1)
 	#kuaidaili(url2)
 	#httpdaili(url3)
 	#ip66(url4)
+	pre_work()
+	
