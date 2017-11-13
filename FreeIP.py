@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import urllib2
 import xlwt
 import xlrd
+import sys
 
 
 url1 = 'http://www.xicidaili.com/'								#西刺
@@ -45,7 +46,10 @@ header_ip66 = {}
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
-xici_list = list()
+xici_text_list = list()
+kuaidaili_text_list = list()
+httpdaili_list = list()
+ip66_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -92,24 +96,18 @@ def xici():
 		i = re.sub('<img src="http://fs.xicidaili.com/images/flag/cn.png" alt="Cn">','',str(i))
 		i = re.sub('<img alt="Cn" src="http://fs.xicidaili.com/images/flag/cn.png"/>','',str(i))
 		i = re.sub('<td class="country"></td>', '',str(i))
-		print i
 		infor_soup = BeautifulSoup(str(i), 'lxml')
 		ip_list.append(infor_soup)
-		#write file
-		with open('123.txt', 'w+') as f:
-			f.writelines(str(infor_soup.get_text().encode('utf-8')).strip())
+
 	for i in ip_list:
-		#print type(i.get_text())
-		print str(i.get_text().encode('utf-8')).strip()
-		#print type(str(i.get_text().encode('utf-8')))
-		print '++++++++++++++++++'
-	#warning!
-	#ip_list[0] is not the format of output
-	#ip_list[1] is the format
-	#print ip_list[1].get_text() 
-	# for i in range(1,len(ip_list)):
-	# 	for j in ip_list:
-	# 		print j.get_text()
+		if str(i.get_text().encode('utf-8')).strip() != None:
+			xici_text_list.append(str(i.get_text().encode('utf-8')).strip())
+
+	#Finally xici_text_list store all the information
+	with open('123.txt', 'w+') as f:
+		for i in xici_text_list:
+			f.writelines(i + '\n')
+	print sys._getframe().f_code.co_name
 '''
 def kuaidaili(url2):
 	
