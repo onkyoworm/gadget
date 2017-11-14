@@ -9,7 +9,8 @@ import sys
 
 
 url1 = 'http://www.xicidaili.com/'								#西刺
-url2 = 'http://www.kuaidaili.com/free/'							#快代理
+url2_1 = 'http://www.kuaidaili.com/free/inha/'							#快代理   1--高匿
+url2_2 = 'http://www.kuaidaili.com/free/intr/'						#快代理   2--普通
 url3 = 'http://www.httpdaili.com/mfdl/'							#httpdaili
 url4 = 'http://www.66ip.cn/'									#66ip
 
@@ -47,20 +48,23 @@ header_ip66 = {}
 status_code_dict = dict()
 page_dirt = dict()
 xici_text_list = list()
-kuaidaili_text_list = list()
+kuaidaili_text_list_1 = list()
+kuaidaili_text_list_2 = list()
 httpdaili_list = list()
 ip66_text_list = list()
 
 #function of check & get the website
 def pre_work():
 	url1_check = requests.get(url1, headers= header_xici)
-	url2_check = requests.get(url2, headers= header_kuaidaili)
+	url2_1_check = requests.get(url2_1, headers= header_kuaidaili)
+	url2_2_check = requests.get(url2_2, headers= header_kuaidaili)
 	url3_check = requests.get(url3, headers= header_httpdaili)
 	url4_check = requests.get(url4, headers= header_ip66)
 
 	#dict for store the status_code
 	status_code_dict['url1'] = url1_check.status_code
-	status_code_dict['url2'] = url2_check.status_code
+	status_code_dict['url2_1'] = url2_1_check.status_code
+	status_code_dict['url2_2'] = url2_2_check.status_code
 	status_code_dict['url3'] = url3_check.status_code
 	status_code_dict['url4'] = url4_check.status_code
 	for key, value in status_code_dict.items():
@@ -70,15 +74,18 @@ def pre_work():
 
 	#dirt for store the page
 	page_dirt['url1'] = url1_check.content
-	page_dirt['url2'] = url2_check.content
+	page_dirt['url2_1'] = url2_1_check.content
+	page_dirt['url2_2'] = url2_2_check.content
 	page_dirt['url3'] = url3_check.content
 	page_dirt['url4'] = url4_check.content
 
 	#localize the page
 	with open('url1_page.html', 'w+') as f:
 		f.writelines(url1_check.content)
-	with open('url2_page.html', 'w+') as f:
-		f.writelines(url2_check.content)
+	with open('url2_1_page.html', 'w+') as f:
+		f.writelines(url2_1_check.content)
+	with open('url2_2_page.html', 'w+') as f:
+		f.writelines(url2_2_check.content)
 	with open('url3_page.html', 'w+') as f:
 		f.writelines(url3_check.content)
 	with open('url4_page.html', 'w+') as f:
@@ -108,9 +115,9 @@ def xici():
 		for i in xici_text_list:
 			f.writelines(i + '\n')
 	print sys._getframe().f_code.co_name
-'''
-def kuaidaili(url2):
-	
+
+def kuaidaili():
+	'''
 	#this website divide into two parts: anonymity and normal
 	
 	infor_list = list()
@@ -152,7 +159,26 @@ def kuaidaili(url2):
 	length2 = len(infor_list2)
 	for i in range(1, length2):
 		for j in infor_list2[i]:
-			print j.get_text()		
+			print j.get_text()
+	'''		
+	test_list = list()
+	with open('url2_1_page.html', 'r') as f1:
+		soup1 = BeautifulSoup(f1, 'lxml')
+	with open('url2_2_page.html', 'r') as f2:
+		soup2 = BeautifulSoup(f2, 'lxml')
+	infor_1 = soup1.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
+	infor_2 = soup2.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
+	for i in infor_1.children:
+		infor_soup = BeautifulSoup(str(i), 'lxml')
+		test_list.append(infor_soup)
+
+	for i in test_list:
+		if str(i.get_text().encode('utf-8')).strip() != None:
+			kuaidaili_text_list_1.append(str(i.get_text().encode('utf-8')).strip())
+	with open('1.txt', 'w+') as f:
+		for i in kuaidaili_text_list_1:
+			f.writelines(i + '\n')
+'''
 def httpdaili(url3):
 
 	#for avoid banned we store the raw html file
@@ -274,9 +300,9 @@ def output_format(target_list, current_function_name):
 			
 if __name__ == '__main__':
 	#pre_work()
-	xici()
-	#kuaidaili(url2)
-	#httpdaili(url3)
+	#xici()
+	kuaidaili()
+	#httpdaili()
 	#ip66(url4)
 	
 	
