@@ -50,7 +50,7 @@ page_dirt = dict()
 xici_text_list = list()
 kuaidaili_text_list_1 = list()
 kuaidaili_text_list_2 = list()
-httpdaili_list = list()
+httpdaili_text_list = list()
 ip66_text_list = list()
 
 #function of check & get the website
@@ -95,6 +95,7 @@ def pre_work():
 def xici():
 
 	ip_list = list()
+	name = sys._getframe().f_code.co_name
 
 	with open('url1_page.html', 'r') as f:
 		soup = BeautifulSoup(f, 'lxml')
@@ -111,182 +112,80 @@ def xici():
 			xici_text_list.append(str(i.get_text().encode('utf-8')).strip())
 
 	#Finally xici_text_list store all the information
-	with open('123.txt', 'w+') as f:
+	with open(name + '.txt', 'w+') as f:
 		for i in xici_text_list:
 			f.writelines(i + '\n')
-	print sys._getframe().f_code.co_name
 
 def kuaidaili():
-	'''
-	#this website divide into two parts: anonymity and normal
-	
-	infor_list = list()
-	#part1--anonymity proxy
-	anon = urllib2.urlopen(url2 + 'inha').read()
-	#anon = requests.get(url2 + 'inha', headers=header_kuaidaili)
-	anon_soup = BeautifulSoup(anon, 'lxml')
 
-	#locate the table
-	part1 = anon_soup.find('table', attrs={'class' : re.compile('')})
-	for i in part1.children:
-		if i != '\n':
-			infor_soup = BeautifulSoup(str(i), 'lxml')
-			#add infor
-			infor_list.append(infor_soup)
-	#infor_list[0] is the format of output		
-	#print infor_list[0].get_text()
-
-	#others is proxy's detail
-	length1 = len(infor_list)
-	for i in range(1, length1):
-		for j in infor_list[i]:
-			print j.get_text()
-
-	infor_list2 = list()
-	#part2--normal proxy
-	#norm = requests.get(url2 + 'intr', headers=header_kuaidaili)
-	norm = urllib2.urlopen(url2 + 'inha').read()
-	norm_soup = BeautifulSoup(norm, 'lxml')
-
-	#locate the table
-	part2 = norm_soup.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
-	for i in part2.children:
-		if i != '\n':
-			infor_soup2 = BeautifulSoup(str(i), 'lxml')
-			#for the same format of output, so do not add name again
-
-	#others is proxy's detail
-	length2 = len(infor_list2)
-	for i in range(1, length2):
-		for j in infor_list2[i]:
-			print j.get_text()
-	'''		
-	test_list = list()
+	name = sys._getframe().f_code.co_name
+	ip_list = list()
 	with open('url2_1_page.html', 'r') as f1:
 		soup1 = BeautifulSoup(f1, 'lxml')
 	with open('url2_2_page.html', 'r') as f2:
 		soup2 = BeautifulSoup(f2, 'lxml')
 	infor_1 = soup1.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
 	infor_2 = soup2.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
+
 	for i in infor_1.children:
 		infor_soup = BeautifulSoup(str(i), 'lxml')
-		test_list.append(infor_soup)
+		ip_list.append(infor_soup)
+	for i in infor_2.children:
+		infor_soup = BeautifulSoup(str(i), 'lxml')
+		ip_list.append(infor_soup)
 
-	for i in test_list:
+	for i in ip_list:
 		if str(i.get_text().encode('utf-8')).strip() != None:
 			kuaidaili_text_list_1.append(str(i.get_text().encode('utf-8')).strip())
-	with open('1.txt', 'w+') as f:
+	with open(name + '.txt', 'w+') as f:
 		for i in kuaidaili_text_list_1:
 			f.writelines(i + '\n')
-'''
-def httpdaili(url3):
 
-	#for avoid banned we store the raw html file
+def httpdaili():
 
-	surf = requests.get(url=url3, headers=header_httpdaili)
-	surf = urllib2.urlopen(url3).read()
-	with open('123.html', 'w+') as f:
-		f.write(surf)
-	f.close()
-	#divide into three parts
-	analyze = BeautifulSoup(surf, 'lxml')
-	
-	#part1--Chinese's http proxy
-	infor_list1 = list()										#include the name and the ip's detail
+	name = sys._getframe().f_code.co_name
+	ip_list = list()
 
-	#locate the informations
-	part1 = analyze.find('li', attrs={'style': re.compile('position: absolute; left: 10.5px; top: 0px;')})
-	for i in part1.table.children:
-		if i != '\n':
-			infor_soup = BeautifulSoup(str(i), 'lxml')
-			#add all infor
-			infor_list1.append(infor_soup)
+	with open('url3_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor1 = soup.find('li', attrs={'style': re.compile('position: absolute; left: 10.5px; top: 0px;')})
+	infor2 = soup.find('li', attrs={'style': re.compile('position: absolute; left: 410.5px; top: 0px;')})
+	infor3 = soup.find('li', attrs={'style': re.compile('position: absolute; left: 810.5px; top: 0px;')})
 
-	length1 = len(infor_list1)
-	for i in range(length1):
-		for j in infor_list1[i]:
-			#print j.get_text()
-			pass
-
-	#print infor_list1[0].get_text()							
-	#infor_list1[0] is the format of name
-	#others is ip's detail
-	for i in range(1, length1):
-		for j in infor_list1[i]:
-			#print j.get_text()
-			pass
-
-	#######################################################################################################		
-
-	#part2--foreign http proxy
-	infor_list2 = list()
-
-	#locate the informations
-	part2 = analyze.find('li', attrs={'style': re.compile('position: absolute; left: 410.5px; top: 0px;')})
-	for i in part2.table.children:
-		if i != '\n':
-			infor_soup2 = BeautifulSoup(str(i), 'lxml')
-			#add infor
-			infor_list2.append(infor_soup2)
-	length2 = len(infor_list2)
-	for i in range(length2):
-		for j in infor_list2[i]:
-			#print j.get_text()
-			pass
-	#print infor_list2[0].get_text()
-	#infor_list2[0] is the format of name
-	#others is ip's detail
-	for i in range(1, length1):
-		for j in infor_list2[i]:
-			#print j.get_text()
-			pass
-
-	#######################################################################################################		
-
-	#part3-- https proxy	
-	infor_list3 = list()
-
-	#locate the informations
-	part3 = analyze.find('li', attrs={'style': re.compile('position: absolute; left: 810.5px; top: 0px;')})
-	for i in part3.table.children:
-		if i != '\n':
-			infor_soup3 = BeautifulSoup(str(i), 'lxml')
-			#add infor
-			infor_list3.append(infor_soup3)
-	length3 = len(infor_list3)
-	for i in range(length3):
-		for j in infor_list3[i]:
-			#print j.get_text()
-			pass
-	#print infor_list3[0].get_text()
-	#infor_list3[0] is the format of name
-	#others is ip's detail
-	for i in range(1, length1):
-		for j in infor_list3[i]:
-			#print j.get_text()
-			pass
-def ip66(url4):
-	
-	infor_list = list()
-
-	#locate the information
-	surf = urllib2.urlopen(url4).read()
-	surf_soup = BeautifulSoup(surf, 'lxml')
-
-	infor = surf_soup.find('table', attrs= {'width': re.compile('100%')})
-
-	for i in infor.children:
+	for i in infor1.children:
 		infor_soup = BeautifulSoup(str(i), 'lxml')
-		infor_list.append(infor_soup)
-		
-	# in this website, if you use get_text() directly there will be some problem while display	
-	# for i in infor_list:
-	# 	print i.get_text()
-	match = re.compile(r'<tr>(.*?)</tr>')
-	for i in infor_list:
-		print i
-		print str(match.findall(str(i))) + '2333'
-'''
+		ip_list.append(infor_soup)
+	for i in infor2.children:
+		infor_soup = BeautifulSoup(str(i), 'lxml')
+		ip_list.append(infor_soup)
+	for i in infor3.children:
+		infor_soup = BeautifulSoup(str(i), 'lxml')
+		ip_list.append(infor_soup)
+
+	for i in ip_list:
+		if str(i.get_text().encode('utf-8')).strip() != None:
+			httpdaili_text_list.append(str(i.get_text().encode('utf-8')).strip())
+	with open(name + '.txt', 'w+') as f:
+		f.writelines(httpdaili_text_list)
+
+def ip66():
+
+	ip_list = list()
+	name = sys._getframe().f_code.co_name
+
+	with open('url4_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table', attrs={'width': re.compile('100%')})
+	for i in infor.children:
+		b = str(i).replace('</td><td>', '#</td><td>')
+		infor_soup = BeautifulSoup(b, 'lxml')
+		ip_list.append(infor_soup)
+	for i in ip_list:
+		if str(i.get_text().encode('utf-8')).strip() != None:
+			ip66_text_list.append(str(i.get_text().encode('utf-8')).strip())
+	with open(name + '.txt', 'w+') as f:
+		for i in ip66_text_list:
+			f.writelines(i + '\n')
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -300,9 +199,9 @@ def output_format(target_list, current_function_name):
 			
 if __name__ == '__main__':
 	#pre_work()
-	#xici()
+	xici()
 	kuaidaili()
-	#httpdaili()
-	#ip66(url4)
+	httpdaili()
+	ip66()
 	
 	
