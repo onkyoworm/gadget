@@ -6,13 +6,15 @@ import urllib2
 import xlwt
 import xlrd
 import sys
+import json
 
 
 url1 = 'http://www.xicidaili.com/'								#西刺
-url2_1 = 'http://www.kuaidaili.com/free/inha/'							#快代理   1--高匿
-url2_2 = 'http://www.kuaidaili.com/free/intr/'						#快代理   2--普通
+url2_1 = 'http://www.kuaidaili.com/free/inha/'					#快代理   1--高匿
+url2_2 = 'http://www.kuaidaili.com/free/intr/'					#快代理   2--普通
 url3 = 'http://www.httpdaili.com/mfdl/'							#httpdaili
 url4 = 'http://www.66ip.cn/'									#66ip
+url5 = 'http://www.xdaili.cn/ipagent//freeip/getFreeIps?page=1&rows=10'							#讯代理
 
 #simple of each website headers
 header_xici = {
@@ -43,6 +45,17 @@ header_httpdaili = {
 
 header_ip66 = {}
 
+header_xdaili = {
+	'Host': 'www.xdaili.cn',
+	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
+	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	'Accept-Language': 'zh,zh-CN;q=0.8,en-US;q=0.5,en;q=0.3',
+	'Accept-Encoding': 'gzip, deflate',
+	'Connection': 'keep-alive',
+	'Upgrade-Insecure-Requests': '1',
+	'Cache-Control': 'max-age=0'
+}
+
 
 #some global variable
 status_code_dict = dict()
@@ -52,6 +65,7 @@ kuaidaili_text_list_1 = list()
 kuaidaili_text_list_2 = list()
 httpdaili_text_list = list()
 ip66_text_list = list()
+xdaili_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -60,6 +74,7 @@ def pre_work():
 	url2_2_check = requests.get(url2_2, headers= header_kuaidaili)
 	url3_check = requests.get(url3, headers= header_httpdaili)
 	url4_check = requests.get(url4, headers= header_ip66)
+	url5_check = requests.get(url5, headers= header_xdaili)
 
 	#dict for store the status_code
 	status_code_dict['url1'] = url1_check.status_code
@@ -67,6 +82,8 @@ def pre_work():
 	status_code_dict['url2_2'] = url2_2_check.status_code
 	status_code_dict['url3'] = url3_check.status_code
 	status_code_dict['url4'] = url4_check.status_code
+	status_code_dict['url5'] = url5_check.status_code
+
 	for key, value in status_code_dict.items():
 		print key + str(value)
 		if str(value) != '200':
@@ -78,6 +95,7 @@ def pre_work():
 	page_dirt['url2_2'] = url2_2_check.content
 	page_dirt['url3'] = url3_check.content
 	page_dirt['url4'] = url4_check.content
+	page_dirt['url5'] = url5_check.content
 
 	#localize the page
 	with open('url1_page.html', 'w+') as f:
@@ -90,6 +108,8 @@ def pre_work():
 		f.writelines(url3_check.content)
 	with open('url4_page.html', 'w+') as f:
 		f.writelines(url4_check.content)
+	with open('url5_page.html', 'w+') as f:
+		f.writelines(url5_check.content)
 
 #each website's crawler
 def xici():
@@ -187,6 +207,27 @@ def ip66():
 		for i in ip66_text_list:
 			f.writelines(i + '\n')
 
+def xdaili():
+	name = sys._getframe().f_code.co_name
+
+	with open('url5_page.html', 'r') as f:
+		raw_dict = json.loads(f.read())
+	raw_list = raw_dict['RESULT']['rows']
+	for i in raw_list:
+		# print i['ip']
+		# print i['port']
+		# print i['position']
+		# print i['anony']
+		# print i['responsetime']
+		# print i['validatetime']
+		# print i['type']
+		#'{0}-{1}-{2}-{3}-{4}-{5}-{6}'.format(i['ip'],i['port'],i['position'],i['anony'],i['responsetime'],i['validatetime'],i['type'])
+		final_text = i['ip']+'-'+i['port']+'-'+i['position']+'-'+i['anony']+'-'+i['responsetime']+'-'+i['validatetime']+'-'+i['type']
+		xdaili_text_list.append(final_text)
+	with open(name + '.txt', 'w+') as f:
+		for i in xdaili_text_list:
+			f.writelines(i.encode('utf-8'))
+
 #define the format of output
 def output_format(target_list, current_function_name):
 	workbook = xlwt.Workbook(encoding= 'utf-8')
@@ -199,9 +240,8 @@ def output_format(target_list, current_function_name):
 			
 if __name__ == '__main__':
 	#pre_work()
-	xici()
-	kuaidaili()
-	httpdaili()
-	ip66()
-	
-	
+	#xici()
+	#kuaidaili()
+	#httpdaili()
+	#ip66()
+	xdaili()
