@@ -61,8 +61,7 @@ header_xdaili = {
 status_code_dict = dict()
 page_dirt = dict()
 xici_text_list = list()
-kuaidaili_text_list_1 = list()
-kuaidaili_text_list_2 = list()
+kuaidaili_text_list = list()
 httpdaili_text_list = list()
 ip66_text_list = list()
 xdaili_text_list = list()
@@ -124,9 +123,10 @@ def xici():
 		i = re.sub('<img src="http://fs.xicidaili.com/images/flag/cn.png" alt="Cn">','',str(i))
 		i = re.sub('<img alt="Cn" src="http://fs.xicidaili.com/images/flag/cn.png"/>','',str(i))
 		i = re.sub('<td class="country"></td>', '',str(i))
-		infor_soup = BeautifulSoup(str(i), 'lxml')
+		i = i.replace('</td>\n<td>', '</td>-<td>').replace('</td>\n<td class="country">', '</td>-<td class="country">')
+		infor_soup = BeautifulSoup(str(i.strip()), 'lxml')
 		ip_list.append(infor_soup)
-
+		print infor_soup
 	for i in ip_list:
 		if str(i.get_text().encode('utf-8')).strip() != None:
 			xici_text_list.append(str(i.get_text().encode('utf-8')).strip())
@@ -149,16 +149,25 @@ def kuaidaili():
 
 	for i in infor_1.children:
 		infor_soup = BeautifulSoup(str(i), 'lxml')
-		ip_list.append(infor_soup)
+		if len(infor_soup.get_text()) > 1:
+			ii = BeautifulSoup(str(infor_soup).replace('</td>\n', '</td>-'), 'lxml')
+			ip_list.append(ii)
+			print ii.get_text()
+	print '66666666666666666666666666666666666666666666666666666666666666666666666666'
 	for i in infor_2.children:
 		infor_soup = BeautifulSoup(str(i), 'lxml')
-		ip_list.append(infor_soup)
+		if len(infor_soup.get_text()) > 1:
+			ii = BeautifulSoup(str(infor_soup).replace('</td>\n', '</td>-'), 'lxml')
+			ip_list.append(ii)
+			#print ii.get_text()
 
 	for i in ip_list:
-		if str(i.get_text().encode('utf-8')).strip() != None:
-			kuaidaili_text_list_1.append(str(i.get_text().encode('utf-8')).strip())
+		# if str(i.get_text().encode('utf-8')).strip() != None:
+		# 	kuaidaili_text_list.append(str(i.get_text().encode('utf-8')).strip())
+		# 	print(i.get_text().encode('utf-8')).strip()
+		kuaidaili_text_list.append(str(i.get_text().encode('utf-8')))
 	with open(name + '.txt', 'w+') as f:
-		for i in kuaidaili_text_list_1:
+		for i in kuaidaili_text_list:
 			f.writelines(i + '\n')
 
 def httpdaili():
@@ -214,19 +223,13 @@ def xdaili():
 		raw_dict = json.loads(f.read())
 	raw_list = raw_dict['RESULT']['rows']
 	for i in raw_list:
-		# print i['ip']
-		# print i['port']
-		# print i['position']
-		# print i['anony']
-		# print i['responsetime']
-		# print i['validatetime']
-		# print i['type']
 		#'{0}-{1}-{2}-{3}-{4}-{5}-{6}'.format(i['ip'],i['port'],i['position'],i['anony'],i['responsetime'],i['validatetime'],i['type'])
 		final_text = i['ip']+'-'+i['port']+'-'+i['position']+'-'+i['anony']+'-'+i['responsetime']+'-'+i['validatetime']+'-'+i['type']
 		xdaili_text_list.append(final_text)
 	with open(name + '.txt', 'w+') as f:
 		for i in xdaili_text_list:
 			f.writelines(i.encode('utf-8'))
+			#print i.encode('utf-8')
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -241,7 +244,7 @@ def output_format(target_list, current_function_name):
 if __name__ == '__main__':
 	#pre_work()
 	#xici()
-	#kuaidaili()
+	kuaidaili()
 	#httpdaili()
 	#ip66()
-	xdaili()
+	#xdaili()
