@@ -9,13 +9,17 @@ import sys
 import json
 
 
-url1 = 'http://www.xicidaili.com/'								#西刺
-url2_1 = 'http://www.kuaidaili.com/free/inha/'					#快代理   1--高匿
-url2_2 = 'http://www.kuaidaili.com/free/intr/'					#快代理   2--普通
-url3 = 'http://www.httpdaili.com/mfdl/'							#httpdaili
-url4 = 'http://www.66ip.cn/'									#66ip
+url1 = 'http://www.xicidaili.com/'																#西刺
+url2_1 = 'http://www.kuaidaili.com/free/inha/'													#快代理   1--高匿
+url2_2 = 'http://www.kuaidaili.com/free/intr/'													#快代理   2--普通
+url3 = 'http://www.httpdaili.com/mfdl/'															#httpdaili
+url4 = 'http://www.66ip.cn/'																	#66ip
 url5 = 'http://www.xdaili.cn/ipagent//freeip/getFreeIps?page=1&rows=10'							#讯代理
-
+url6_1 = 'http://www.data5u.com/free/index.shtml'
+url6_2 = 'http://www.data5u.com/free/gngn/index.shtml'
+url6_3 = 'http://www.data5u.com/free/gnpt/index.shtml'
+url6_4 = 'http://www.data5u.com/free/gwgn/index.shtml'
+url6_5 = 'http://www.data5u.com/free/gwpt/index.shtml'
 #simple of each website headers
 header_xici = {
 	'Host': 'www.xicidaili.com',
@@ -56,6 +60,14 @@ header_xdaili = {
 	'Cache-Control': 'max-age=0'
 }
 
+header_data5u = {
+	'Host': 'www.data5u.com',
+	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
+	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	'Accept-Language': 'zh,zh-CN;q=0.8,en-US;q=0.5,en;q=0.3',
+	'Accept-Encoding': 'gzip, deflate',
+	'Connection': 'keep-alive'
+}
 
 #some global variable
 status_code_dict = dict()
@@ -65,6 +77,7 @@ kuaidaili_text_list = list()
 httpdaili_text_list = list()
 ip66_text_list = list()
 xdaili_text_list = list()
+data5u_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -74,6 +87,11 @@ def pre_work():
 	url3_check = requests.get(url3, headers= header_httpdaili)
 	url4_check = requests.get(url4, headers= header_ip66)
 	url5_check = requests.get(url5, headers= header_xdaili)
+	url6_1_check = requests.get(url6_1, headers = header_data5u)
+	url6_2_check = requests.get(url6_2, headers = header_data5u)
+	url6_3_check = requests.get(url6_3, headers = header_data5u)
+	url6_4_check = requests.get(url6_4, headers = header_data5u)
+	url6_5_check = requests.get(url6_5, headers = header_data5u)
 
 	#dict for store the status_code
 	status_code_dict['url1'] = url1_check.status_code
@@ -82,6 +100,11 @@ def pre_work():
 	status_code_dict['url3'] = url3_check.status_code
 	status_code_dict['url4'] = url4_check.status_code
 	status_code_dict['url5'] = url5_check.status_code
+	status_code_dict['url6_1'] = url6_1_check.status_code
+	status_code_dict['url6_2'] = url6_2_check.status_code
+	status_code_dict['url6_3'] = url6_3_check.status_code
+	status_code_dict['url6_4'] = url6_4_check.status_code
+	status_code_dict['url6_5'] = url6_5_check.status_code
 
 	for key, value in status_code_dict.items():
 		print key + str(value)
@@ -95,6 +118,11 @@ def pre_work():
 	page_dirt['url3'] = url3_check.content
 	page_dirt['url4'] = url4_check.content
 	page_dirt['url5'] = url5_check.content
+	page_dirt['url6_1'] = url6_1_check.content
+	page_dirt['url6_2'] = url6_2_check.content
+	page_dirt['url6_3'] = url6_3_check.content
+	page_dirt['url6_4'] = url6_4_check.content
+	page_dirt['url6_5'] = url6_5_check.content
 
 	#localize the page
 	with open('url1_page.html', 'w+') as f:
@@ -108,6 +136,16 @@ def pre_work():
 	with open('url4_page.html', 'w+') as f:
 		f.writelines(url4_check.content)
 	with open('url5_page.html', 'w+') as f:
+		f.writelines(url5_check.content)
+	with open('url6_1_page.html', 'w+') as f:
+		f.writelines(url5_check.content)
+	with open('url6_2_page.html', 'w+') as f:
+		f.writelines(url5_check.content)
+	with open('url6_3_page.html', 'w+') as f:
+		f.writelines(url5_check.content)
+	with open('url6_4_page.html', 'w+') as f:
+		f.writelines(url5_check.content)
+	with open('url6_5_page.html', 'w+') as f:
 		f.writelines(url5_check.content)
 
 #each website's crawler
@@ -225,7 +263,23 @@ def xdaili():
 		xdaili_text_list.append(final_text)
 	with open(name + '.txt', 'w+') as f:
 		for i in xdaili_text_list:
-			f.writelines(i.encode('utf-8'))
+			f.writelines(i.encode('utf-8') + '\n')
+
+def data5u():
+	name = sys._getframe().f_code.co_name  
+
+	for ii in range(1, 6):
+		mesg_name = 'url6_' + str(ii) + '_page.html'
+		with open(mesg_name, 'r') as f:
+			raw_dict = json.loads(f.read())
+			raw_list = raw_dict['RESULT']['rows']  
+		for i in raw_list:
+			#'{0}-{1}-{2}-{3}-{4}-{5}-{6}'.format(i['ip'],i['port'],i['position'],i['anony'],i['responsetime'],i['validatetime'],i['type'])
+			final_text = i['ip']+'-'+i['port']+'-'+i['position']+'-'+i['anony']+'-'+i['responsetime']+'-'+i['validatetime']+'-'+i['type']+'-'+i['post']
+			data5u_text_list.append(final_text)
+	with open(name + '.txt', 'w+') as f:
+		for i in data5u_text_list:
+			f.writelines(i.encode('utf-8') + '\n')
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -238,9 +292,10 @@ def output_format(target_list, current_function_name):
 	workbook.save('12.xls')
 			
 if __name__ == '__main__':
-	#pre_work()
-	#xici()
-	#kuaidaili()
-	#httpdaili()
+	pre_work()
+	xici()
+	kuaidaili()
+	httpdaili()
 	ip66()
-	#xdaili()
+	xdaili()
+	data5u()
