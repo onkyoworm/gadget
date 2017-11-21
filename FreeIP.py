@@ -126,7 +126,6 @@ def xici():
 		i = i.replace('</td>\n<td>', '</td>-<td>').replace('</td>\n<td class="country">', '</td>-<td class="country">')
 		infor_soup = BeautifulSoup(str(i.strip()), 'lxml')
 		ip_list.append(infor_soup)
-		print infor_soup
 	for i in ip_list:
 		if str(i.get_text().encode('utf-8')).strip() != None:
 			xici_text_list.append(str(i.get_text().encode('utf-8')).strip())
@@ -152,8 +151,6 @@ def kuaidaili():
 		if len(infor_soup.get_text()) > 1:
 			ii = BeautifulSoup(str(infor_soup).replace('</td>\n', '</td>-'), 'lxml')
 			ip_list.append(ii)
-			print ii.get_text()
-	print '66666666666666666666666666666666666666666666666666666666666666666666666666'
 	for i in infor_2.children:
 		infor_soup = BeautifulSoup(str(i), 'lxml')
 		if len(infor_soup.get_text()) > 1:
@@ -182,13 +179,13 @@ def httpdaili():
 	infor3 = soup.find('li', attrs={'style': re.compile('position: absolute; left: 810.5px; top: 0px;')})
 
 	for i in infor1.children:
-		infor_soup = BeautifulSoup(str(i), 'lxml')
+		infor_soup = BeautifulSoup(str(i).replace('</td>\n', '</td>-'), 'lxml')
 		ip_list.append(infor_soup)
 	for i in infor2.children:
-		infor_soup = BeautifulSoup(str(i), 'lxml')
+		infor_soup = BeautifulSoup(str(i).replace('</td>\n', '</td>-'), 'lxml')
 		ip_list.append(infor_soup)
 	for i in infor3.children:
-		infor_soup = BeautifulSoup(str(i), 'lxml')
+		infor_soup = BeautifulSoup(str(i).replace('</td>\n', '</td>-'), 'lxml')
 		ip_list.append(infor_soup)
 
 	for i in ip_list:
@@ -206,7 +203,7 @@ def ip66():
 		soup = BeautifulSoup(f, 'lxml')
 	infor = soup.find('table', attrs={'width': re.compile('100%')})
 	for i in infor.children:
-		b = str(i).replace('</td><td>', '#</td><td>')
+		b = str(i).replace('</td><td>', '-</td><td>')
 		infor_soup = BeautifulSoup(b, 'lxml')
 		ip_list.append(infor_soup)
 	for i in ip_list:
@@ -229,7 +226,6 @@ def xdaili():
 	with open(name + '.txt', 'w+') as f:
 		for i in xdaili_text_list:
 			f.writelines(i.encode('utf-8'))
-			#print i.encode('utf-8')
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -244,7 +240,7 @@ def output_format(target_list, current_function_name):
 if __name__ == '__main__':
 	#pre_work()
 	#xici()
-	kuaidaili()
+	#kuaidaili()
 	#httpdaili()
-	#ip66()
+	ip66()
 	#xdaili()
