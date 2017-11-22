@@ -20,6 +20,8 @@ url6_2 = 'http://www.data5u.com/free/gngn/index.shtml'
 url6_3 = 'http://www.data5u.com/free/gnpt/index.shtml'
 url6_4 = 'http://www.data5u.com/free/gwgn/index.shtml'
 url6_5 = 'http://www.data5u.com/free/gwpt/index.shtml'
+url7 = 'http://www.goubanjia.com/'
+
 #simple of each website headers
 header_xici = {
 	'Host': 'www.xicidaili.com',
@@ -69,6 +71,16 @@ header_data5u = {
 	'Connection': 'keep-alive'
 }
 
+header_goubaojia = {
+	'Host': 'www.goubanjia.com',
+	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
+	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	'Accept-Language': 'zh,zh-CN;q=0.8,en-US;q=0.5,en;q=0.3',
+	'Accept-Encoding': 'gzip, deflate',
+	'Referer': 'https://www.goubanjia.com/',
+	'Connection': 'keep-alive'
+}
+
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
@@ -78,6 +90,7 @@ httpdaili_text_list = list()
 ip66_text_list = list()
 xdaili_text_list = list()
 data5u_text_list = list()
+goubaojia_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -92,6 +105,8 @@ def pre_work():
 	url6_3_check = requests.get(url6_3, headers = header_data5u)
 	url6_4_check = requests.get(url6_4, headers = header_data5u)
 	url6_5_check = requests.get(url6_5, headers = header_data5u)
+	url7_check = requests.get(url7, headers= header_goubaojia)
+
 
 	#dict for store the status_code
 	status_code_dict['url1'] = url1_check.status_code
@@ -105,9 +120,10 @@ def pre_work():
 	status_code_dict['url6_3'] = url6_3_check.status_code
 	status_code_dict['url6_4'] = url6_4_check.status_code
 	status_code_dict['url6_5'] = url6_5_check.status_code
+	status_code_dict['url7'] = url7_check.status_code
 
 	for key, value in status_code_dict.items():
-		print key + str(value)
+		print key + ' is' + str(value)
 		if str(value) != '200':
 			print({0} + "'s status_code is not 200, please check").format(str(key))
 
@@ -123,8 +139,9 @@ def pre_work():
 	page_dirt['url6_3'] = url6_3_check.content
 	page_dirt['url6_4'] = url6_4_check.content
 	page_dirt['url6_5'] = url6_5_check.content
+	page_dirt['url7'] = url7_check.content
 
-	#localize the page
+	#localize the page 
 	with open('url1_page.html', 'w+') as f:
 		f.writelines(url1_check.content)
 	with open('url2_1_page.html', 'w+') as f:
@@ -138,15 +155,17 @@ def pre_work():
 	with open('url5_page.html', 'w+') as f:
 		f.writelines(url5_check.content)
 	with open('url6_1_page.html', 'w+') as f:
-		f.writelines(url5_check.content)
-	with open('url6_2_page.html', 'w+') as f:
-		f.writelines(url5_check.content)
-	with open('url6_3_page.html', 'w+') as f:
-		f.writelines(url5_check.content)
-	with open('url6_4_page.html', 'w+') as f:
-		f.writelines(url5_check.content)
-	with open('url6_5_page.html', 'w+') as f:
-		f.writelines(url5_check.content)
+		f.writelines(url6_1_check.content)
+	with open('url6_2_page.html', 'a+') as f:
+		f.writelines(url6_2_check.content)
+	with open('url6_3_page.html', 'a+') as f:
+		f.writelines(url6_3_check.content)
+	with open('url6_4_page.html', 'a+') as f:
+		f.writelines(url6_4_check.content)
+	with open('url6_5_page.html', 'a+') as f:
+		f.writelines(url6_5_check.content)
+	with open('url7_page.html', 'w+') as f:
+		f.writelines(url7_check.content)
 
 #each website's crawler
 def xici():
@@ -281,6 +300,23 @@ def data5u():
 		for i in data5u_text_list:
 			f.writelines(i.encode('utf-8') + '\n')
 
+def goubaojia():
+	name = sys._getframe().f_code.co_name
+	ip_list = list()
+
+	with open('url7_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table', attrs={'class': re.compile('table')})
+	for i in infor.children:
+		kill_none1 = re.compile('<p style="display:none;">.*?</p>')
+		kill_none2 = re.compile('<p style="display: none;">.*?</p>')
+		i = kill_none1.sub("", str(i))
+		i = kill_none2.sub("", str(i))
+		infor_soup = BeautifulSoup(str(i), 'lxml')
+		ip_list.append(infor_soup)
+	for i in ip_list:
+		print i.get_text( )
+
 #define the format of output
 def output_format(target_list, current_function_name):
 	workbook = xlwt.Workbook(encoding= 'utf-8')
@@ -292,10 +328,11 @@ def output_format(target_list, current_function_name):
 	workbook.save('12.xls')
 			
 if __name__ == '__main__':
-	pre_work()
-	xici()
-	kuaidaili()
-	httpdaili()
-	ip66()
-	xdaili()
-	data5u()
+	#pre_work()
+	#xici()
+	#kuaidaili()
+	#httpdaili()
+	#ip66()
+	#xdaili()
+	#data5u()
+	goubaojia()
