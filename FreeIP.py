@@ -310,12 +310,18 @@ def goubaojia():
 	for i in infor.children:
 		kill_none1 = re.compile('<p style="display:none;">.*?</p>')
 		kill_none2 = re.compile('<p style="display: none;">.*?</p>')
+		kill_space = re.compile('[\s]+<a class="href" href="http://www.goubanjia.com/free/.*?">')
+		format_output = re.compile('</td>\n')
 		i = kill_none1.sub("", str(i))
 		i = kill_none2.sub("", str(i))
+		i = kill_space.sub("", str(i))
+		i = format_output.sub('</td>-', str(i))
 		infor_soup = BeautifulSoup(str(i), 'lxml')
-		ip_list.append(infor_soup)
-	for i in ip_list:
-		print i.get_text( )
+		#ip_list.append(infor_soup)
+		goubaojia_text_list.append(infor_soup)
+	with open(name + '.txt', 'w+') as f:
+		for i in goubaojia_text_list:
+			f.writelines(str(i.get_text().encode('utf-8')).strip())
 
 #define the format of output
 def output_format(target_list, current_function_name):
