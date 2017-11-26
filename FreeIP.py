@@ -23,6 +23,7 @@ url6_5 = 'http://www.data5u.com/free/gwpt/index.shtml'
 url7 = 'http://www.goubanjia.com/'
 url8 = 'http://www.ip181.com/'
 url9 = 'http://www.proxy360.cn/Proxy'
+url10 = 'http://www.ip3366.net/'
 
 #simple of each website headers
 header_xici = {
@@ -73,7 +74,7 @@ header_data5u = {
 	'Connection': 'keep-alive'
 }
 
-header_goubaojia = {
+header_goubanjia = {
 	'Host': 'www.goubanjia.com',
 	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
 	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -91,6 +92,10 @@ header_proxy360 = {
 	
 }
 
+header_ip3366 = {
+	
+}
+
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
@@ -100,9 +105,10 @@ httpdaili_text_list = list()
 ip66_text_list = list()
 xdaili_text_list = list()
 data5u_text_list = list()
-goubaojia_text_list = list()
+goubanjia_text_list = list()
 ip191_text_list = list()
-proxy360_list = list()
+proxy360_text_list = list()
+ip3366_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -117,9 +123,10 @@ def pre_work():
 	url6_3_check = requests.get(url6_3, headers = header_data5u)
 	url6_4_check = requests.get(url6_4, headers = header_data5u)
 	url6_5_check = requests.get(url6_5, headers = header_data5u)
-	url7_check = requests.get(url7, headers= header_goubaojia)
+	url7_check = requests.get(url7, headers= header_goubanjia)
 	url8_check = requests.get(url8, headers= header_ip181)
 	url9_check = requests.get(url9, headers= header_proxy360)
+	url10_check = requests.get(url10, headers= header_ip3366)
 
 
 	#dict for store the status_code
@@ -137,6 +144,7 @@ def pre_work():
 	status_code_dict['url7'] = url7_check.status_code
 	status_code_dict['url8'] = url8_check.status_code
 	status_code_dict['url9'] = url9_check.status_code
+	status_code_dict['url10'] = url10_check.status_code
 
 	for key, value in status_code_dict.items():
 		print key + ' is ' + str(value)
@@ -158,6 +166,7 @@ def pre_work():
 	page_dirt['url7'] = url7_check.content
 	page_dirt['url8'] = url8_check.content
 	page_dirt['url9'] = url9_check.content
+	page_dirt['url10'] = url10_check.content
 
 	#localize the page 
 	with open('url1_page.html', 'w+') as f:
@@ -188,6 +197,8 @@ def pre_work():
 		f.writelines(url8_check.content)
 	with open('url9_page.html', 'w+') as f:
 		f.writelines(url9_check.content)
+	with open('url10_page.html', 'w+') as f:
+		f.writelines(url10_check.content)
 
 #each website's crawler
 def xici():
@@ -322,7 +333,7 @@ def data5u():
 		for i in data5u_text_list:
 			f.writelines(i.encode('utf-8') + '\n')
 
-def goubaojia():
+def goubanjia():
 	name = sys._getframe().f_code.co_name
 	ip_list = list()
 
@@ -340,9 +351,10 @@ def goubaojia():
 		i = format_output.sub('</td>-', str(i))
 		infor_soup = BeautifulSoup(str(i), 'lxml')
 		#ip_list.append(infor_soup)
-		goubaojia_text_list.append(infor_soup)
+		goubanjia_text_list.append(infor_soup)
+		print infor_soup.get_text()
 	with open(name + '.txt', 'w+') as f:
-		for i in goubaojia_text_list:
+		for i in goubanjia_text_list:
 			f.writelines(str(i.get_text().encode('utf-8')).strip())
 
 def ip191():
@@ -370,7 +382,26 @@ def proxy360():
 	infor = soup.find('div', attrs={'id': re.compile('ctl00_ContentPlaceHolder1_upProjectList')})	
 
 	for i in infor.children:
+		i = str(i).replace(r'<div style="width:100px; float:left;">[.*?]+</div>','')
+		i = BeautifulSoup(i, 'lxml')
 		print i
+ 
+def ip3366():
+	name = sys._getframe().f_code.co_name
+	ip_list = list()
+
+	with open('url10_page.html') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
+	for i in infor.children:
+		i = str(i).replace('</td>\n', '</td>-')
+		infor_soup = BeautifulSoup(str(i), 'lxml')
+		ip_list.append(infor_soup)
+	for i in ip_list:
+		if str(i.get_text().encode('utf-8')).strip() != None:
+			ip3366_text_list.append(str(i.get_text().encode('utf-8')))
+	with open(name + '.txt', 'w+') as f:
+		f.writelines(ip3366_text_list)
 
 
 #define the format of output
@@ -391,6 +422,7 @@ if __name__ == '__main__':
 	#ip66()
 	#xdaili()
 	#data5u()
-	#goubaojia()
+	#goubanjia()
 	#ip191()
-	proxy360()
+	#proxy360()
+	#ip3366()
