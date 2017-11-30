@@ -379,12 +379,16 @@ def proxy360():
 
 	with open('url9_page.html', 'r') as f:
 		soup = BeautifulSoup(f, 'lxml')
-	infor = soup.find('div', attrs={'id': re.compile('ctl00_ContentPlaceHolder1_upProjectList')})	
 
-	for i in infor.children:
-		i = str(i).replace(r'<div style="width:100px; float:left;">[.*?]+</div>','')
-		i = BeautifulSoup(i, 'lxml')
-		print i
+	infor = soup.findAll('div', attrs={'class': re.compile('proxylistitem')})
+	for i in infor:
+		ii = re.sub('\s', '', str(i))
+		ii = BeautifulSoup(ii.replace('','').replace('</','-</'), 'lxml')
+		proxy360_text_list.append(ii.spanclass.get_text().encode('utf-8'))
+
+	with open(name + '.txt', 'w+') as f:
+		for i in proxy360_text_list:
+			f.writelines(i + '\n')
  
 def ip3366():
 	name = sys._getframe().f_code.co_name
@@ -424,5 +428,5 @@ if __name__ == '__main__':
 	#data5u()
 	#goubanjia()
 	#ip191()
-	#proxy360()
+	proxy360()
 	#ip3366()
