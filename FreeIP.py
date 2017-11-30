@@ -24,6 +24,8 @@ url7 = 'http://www.goubanjia.com/'
 url8 = 'http://www.ip181.com/'
 url9 = 'http://www.proxy360.cn/Proxy'
 url10 = 'http://www.ip3366.net/'
+url11 = 'http://ip.baizhongsou.com/'
+url12 = 'http://www.pcdaili.com/index.php?m=daili&a=free&type=1'
 
 #simple of each website headers
 header_xici = {
@@ -96,6 +98,14 @@ header_ip3366 = {
 	
 }
 
+header_baizhongshou = {
+	
+}
+
+header_pcdaili = {
+	
+}
+
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
@@ -106,9 +116,11 @@ ip66_text_list = list()
 xdaili_text_list = list()
 data5u_text_list = list()
 goubanjia_text_list = list()
-ip191_text_list = list()
+ip181_text_list = list()
 proxy360_text_list = list()
 ip3366_text_list = list()
+baizhongsou_text_list = list()
+pcdaili_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -127,6 +139,8 @@ def pre_work():
 	url8_check = requests.get(url8, headers= header_ip181)
 	url9_check = requests.get(url9, headers= header_proxy360)
 	url10_check = requests.get(url10, headers= header_ip3366)
+	url11_check = requests.get(url11, headers= header_baizhongshou)
+	url12_check = requests.get(url12, headers= header_pcdaili)
 
 
 	#dict for store the status_code
@@ -145,6 +159,8 @@ def pre_work():
 	status_code_dict['url8'] = url8_check.status_code
 	status_code_dict['url9'] = url9_check.status_code
 	status_code_dict['url10'] = url10_check.status_code
+	status_code_dict['url11'] = url11_check.status_code
+	status_code_dict['url12'] = url12_check.status_code
 
 	for key, value in status_code_dict.items():
 		print key + ' is ' + str(value)
@@ -167,6 +183,8 @@ def pre_work():
 	page_dirt['url8'] = url8_check.content
 	page_dirt['url9'] = url9_check.content
 	page_dirt['url10'] = url10_check.content
+	page_dirt['url11'] = url11_check.content
+	page_dirt['url12'] = url12_check.content
 
 	#localize the page 
 	with open('url1_page.html', 'w+') as f:
@@ -199,6 +217,10 @@ def pre_work():
 		f.writelines(url9_check.content)
 	with open('url10_page.html', 'w+') as f:
 		f.writelines(url10_check.content)
+	with open('url11_page.html', 'w+') as f:
+		f.writelines(url11_check.content)
+	with open('url12_page.html', 'w+') as f:
+		f.writelines(url12_check.content)
 
 #each website's crawler
 def xici():
@@ -357,7 +379,7 @@ def goubanjia():
 		for i in goubanjia_text_list:
 			f.writelines(str(i.get_text().encode('utf-8')).strip())
 
-def ip191():
+def ip181():
 	name = sys._getframe().f_code.co_name
 	ip_list = list()
 
@@ -370,9 +392,9 @@ def ip191():
 		ip_list.append(infor_soup)
 	for i in ip_list:
 		if str(i.get_text().encode('utf-8')).strip() != None:
-			ip191_text_list.append(str(i.get_text().encode('utf-8')).strip())
+			ip181_text_list.append(str(i.get_text().encode('utf-8')).strip())
 	with open(name + '.txt', 'w+') as f:
-		f.writelines(ip191_text_list)
+		f.writelines(ip181_text_list)
 
 def proxy360():
 	name = sys._getframe().f_code.co_name
@@ -394,7 +416,7 @@ def ip3366():
 	name = sys._getframe().f_code.co_name
 	ip_list = list()
 
-	with open('url10_page.html') as f:
+	with open('url10_page.html', 'r') as f:
 		soup = BeautifulSoup(f, 'lxml')
 	infor = soup.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
 	for i in infor.children:
@@ -407,7 +429,31 @@ def ip3366():
 	with open(name + '.txt', 'w+') as f:
 		f.writelines(ip3366_text_list)
 
+def baizhongshou():
+	name = sys._getframe().f_code.co_name
 
+	with open('url11_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('div', attrs={'class': re.compile('daililist')})
+	infor = str(infor).replace(':', '-')
+	infor = str(infor).replace('</td>', '-</td>')
+	infor_soup = BeautifulSoup(infor, 'lxml')
+	with open(name + '.txt', 'w+') as f:
+		f.writelines(str(infor_soup.get_text().encode('utf-8')))
+
+def pcdaili():
+	name = sys._getframe().f_code.co_name
+
+	with open('url12_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table', attrs={'class': re.compile('table table-striped')})
+	for i in infor.children:
+		infor_soup = BeautifulSoup(str(i).replace('</td>\n', '</td>-'), 'lxml')
+		pcdaili_text_list.append(infor_soup)
+	with open(name + '.txt', 'w+') as f:
+		for i in pcdaili_text_list:
+			f.writelines(str(i.get_text().encode('utf-8')))
+			
 #define the format of output
 def output_format(target_list, current_function_name):
 	workbook = xlwt.Workbook(encoding= 'utf-8')
@@ -427,6 +473,8 @@ if __name__ == '__main__':
 	#xdaili()
 	#data5u()
 	#goubanjia()
-	#ip191()
-	proxy360()
+	#ip181()
+	#proxy360()
 	#ip3366()
+	#baizhongshou()
+	pcdaili()
