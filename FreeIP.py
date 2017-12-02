@@ -27,6 +27,12 @@ url10 = 'http://www.ip3366.net/'
 url11 = 'http://ip.baizhongsou.com/'
 url12 = 'http://www.pcdaili.com/index.php?m=daili&a=free&type=1'
 url13 = 'http://www.nianshao.me/'
+url14 = 'http://www.yun-daili.com/free.asp'				
+url15 = 'http://www.httpsdaili.com/'					
+url16 = 'http://www.iphai.com/free/ng'					
+url17 = 'http://www.superfastip.com/'					#lack
+url18 = 'http://www.xsdaili.com/'						#lack
+url19 = 'http://www.meiridaili.com/'					#lack
 
 #simple of each website headers
 header_xici = {
@@ -111,6 +117,18 @@ header_nianshao = {
 	
 }
 
+header_yundaili = {
+	
+}
+
+header_httpsdaili = {
+	
+}
+
+header_iphai = {
+	
+}
+
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
@@ -130,6 +148,9 @@ ip3366_text_list = list()
 baizhongsou_text_list = list()
 pcdaili_text_list = list()
 nianshao_text_list = list()
+yundaili_text_list = list()
+httpsdaili_text_list = list()
+iphai_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -151,6 +172,9 @@ def pre_work():
 	url11_check = requests.get(url11, headers= header_baizhongshou)
 	url12_check = requests.get(url12, headers= header_pcdaili)
 	url13_check = requests.get(url13, headers= header_nianshao)
+	url14_check = requests.get(url14, headers= header_yundaili)
+	url15_check = requests.get(url15, headers= header_httpsdaili)
+	url16_check = requests.get(url16, headers= header_iphai)
 
 
 	#dict for store the status_code
@@ -172,11 +196,14 @@ def pre_work():
 	status_code_dict['url11'] = url11_check.status_code
 	status_code_dict['url12'] = url12_check.status_code
 	status_code_dict['url13'] = url13_check.status_code
+	status_code_dict['url14'] = url14_check.status_code
+	status_code_dict['url15'] = url15_check.status_code
+	status_code_dict['url16'] = url16_check.status_code
 
 	for key, value in status_code_dict.items():
 		print key + ' is ' + str(value)
 		if str(value) != '200':
-			print({0} + "'s status_code is not 200, please check").format(str(key))
+			print(str(key) + "'s status_code is not 200, please check")
 
 	#dirt for store the page
 	page_dirt['url1'] = url1_check.content
@@ -197,6 +224,9 @@ def pre_work():
 	page_dirt['url11'] = url11_check.content
 	page_dirt['url12'] = url12_check.content
 	page_dirt['url13'] = url13_check.content
+	page_dirt['url14'] = url14_check.content
+	page_dirt['url15'] = url15_check.content
+	page_dirt['url16'] = url16_check.content
 
 	#localize the page 
 	with open('url1_page.html', 'w+') as f:
@@ -235,6 +265,12 @@ def pre_work():
 		f.writelines(url12_check.content)
 	with open('url13_page.html', 'w+') as f:
 		f.writelines(url13_check.content)
+	with open('url14_page.html', 'w+') as f:
+		f.writelines(url14_check.content)
+	with open('url15_page.html', 'w+') as f:
+		f.writelines(url15_check.content)
+	with open('url16_page.html', 'w+') as f:
+		f.writelines(url16_check.content)
 
 #each website's crawler
 def xici():
@@ -486,6 +522,51 @@ def nianshao():
 		for i in nianshao_text_list:
 			f.writelines(i)
 
+def yundaili():
+	name = sys._getframe().f_code.co_name
+
+	with open('url14_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
+	for i in infor.children:
+		i = str(i).replace('</td>\n', '</td>-')
+		i = BeautifulSoup(i, 'lxml')
+		yundaili_text_list.append(i.get_text().encode('utf-8'))
+
+	with open(name + '.txt', 'w+') as f:
+		for i in yundaili_text_list:
+			f.writelines(i)
+
+def httpsdaili():
+	name = sys._getframe().f_code.co_name
+
+	with open('url15_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table', attrs={'class': re.compile('table table-bordered table-striped')})
+	for i in infor.children:
+		i = str(i).replace('</td>\n', '</td>-')
+		i = BeautifulSoup(i, 'lxml')
+		httpsdaili_text_list.append(i.get_text().encode('utf-8'))
+
+	with open(name + '.txt', 'w+') as f:
+		for i in httpsdaili_text_list:
+			f.writelines(i)
+
+def iphai():
+	name = sys._getframe().f_code.co_name
+
+	with open('url16_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table', attrs={'class': re.compile('table table-bordered table-striped table-hover')})
+	infor = re.sub('\s', '', str(infor))
+	infor = infor.replace('</tr>', '</tr>\n')
+	infor = BeautifulSoup(infor.replace('</td>', '</td>-'), 'lxml')
+	iphai_text_list.append(infor.get_text().encode('utf-8'))
+
+	with open(name + '.txt', 'w+') as f:
+		for i in iphai_text_list:
+			f.writelines(i)
+
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -511,4 +592,7 @@ if __name__ == '__main__':
 	#ip3366()
 	#baizhongshou()
 	#pcdaili()
-	nianshao()
+	#nianshao()
+	#yundaili()
+	#httpsdaili()
+	#iphai()
