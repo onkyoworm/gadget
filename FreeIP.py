@@ -30,7 +30,7 @@ url13 = 'http://www.nianshao.me/'
 url14 = 'http://www.yun-daili.com/free.asp'				
 url15 = 'http://www.httpsdaili.com/'					
 url16 = 'http://www.iphai.com/free/ng'					
-url17 = 'http://www.superfastip.com/'					#lack
+url17 = 'http://www.superfastip.com/'					
 url18 = 'http://www.xsdaili.com/'						#lack
 url19 = 'http://www.meiridaili.com/'					#lack
 
@@ -129,6 +129,10 @@ header_iphai = {
 	
 }
 
+header_superfastip = {
+	
+}
+
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
@@ -151,6 +155,7 @@ nianshao_text_list = list()
 yundaili_text_list = list()
 httpsdaili_text_list = list()
 iphai_text_list = list()
+superfastip_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -175,6 +180,7 @@ def pre_work():
 	url14_check = requests.get(url14, headers= header_yundaili)
 	url15_check = requests.get(url15, headers= header_httpsdaili)
 	url16_check = requests.get(url16, headers= header_iphai)
+	url17_check = requests.get(url17, headers= header_superfastip)
 
 
 	#dict for store the status_code
@@ -199,6 +205,7 @@ def pre_work():
 	status_code_dict['url14'] = url14_check.status_code
 	status_code_dict['url15'] = url15_check.status_code
 	status_code_dict['url16'] = url16_check.status_code
+	status_code_dict['url17'] = url17_check.status_code
 
 	for key, value in status_code_dict.items():
 		print key + ' is ' + str(value)
@@ -227,6 +234,7 @@ def pre_work():
 	page_dirt['url14'] = url14_check.content
 	page_dirt['url15'] = url15_check.content
 	page_dirt['url16'] = url16_check.content
+	page_dirt['url17'] = url17_check.content
 
 	#localize the page 
 	with open('url1_page.html', 'w+') as f:
@@ -271,6 +279,8 @@ def pre_work():
 		f.writelines(url15_check.content)
 	with open('url16_page.html', 'w+') as f:
 		f.writelines(url16_check.content)
+	with open('url17_page.html', 'w+') as f:
+		f.writelines(url17_check.content)
 
 #each website's crawler
 def xici():
@@ -567,6 +577,21 @@ def iphai():
 		for i in iphai_text_list:
 			f.writelines(i)
 
+def superfastip():
+	name = sys._getframe().f_code.co_name
+
+	with open('url17_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table', attrs= {'id': re.compile('iptable11')})
+	infor = str(infor).replace('<td>中国</td>', '')
+	infor = str(infor).replace('</td>\n', '</td>-')
+	infor = BeautifulSoup(infor, 'lxml')
+	superfastip_text_list.append(infor.get_text().encode('utf-8'))
+
+	with open(name + '.txt', 'w+') as f:
+		for i in superfastip_text_list:
+			f.writelines(i)
+
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -579,7 +604,7 @@ def output_format(target_list, current_function_name):
 	workbook.save('12.xls')
 			
 if __name__ == '__main__':
-	#pre_work()
+	pre_work()
 	#xici()
 	#kuaidaili()
 	#httpdaili()
@@ -596,3 +621,4 @@ if __name__ == '__main__':
 	#yundaili()
 	#httpsdaili()
 	#iphai()
+	superfastip()
