@@ -33,6 +33,7 @@ url16 = 'http://www.iphai.com/free/ng'
 url17 = 'http://www.superfastip.com/'					
 url18 = 'http://www.xsdaili.com/'						#lack
 url19 = 'http://www.meiridaili.com/'					#lack
+url20 = 'https://proxy.coderbusy.com/zh-cn/classical/anonymous-type/anonymous.aspx'
 
 #simple of each website headers
 header_xici = {
@@ -133,6 +134,10 @@ header_superfastip = {
 	
 }
 
+header_coderbusy = {
+	
+}
+
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
@@ -156,6 +161,7 @@ yundaili_text_list = list()
 httpsdaili_text_list = list()
 iphai_text_list = list()
 superfastip_text_list = list()
+coderbusy_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -181,6 +187,7 @@ def pre_work():
 	url15_check = requests.get(url15, headers= header_httpsdaili)
 	url16_check = requests.get(url16, headers= header_iphai)
 	url17_check = requests.get(url17, headers= header_superfastip)
+	url20_check = requests.get(url20, headers= header_coderbusy)
 
 
 	#dict for store the status_code
@@ -206,6 +213,7 @@ def pre_work():
 	status_code_dict['url15'] = url15_check.status_code
 	status_code_dict['url16'] = url16_check.status_code
 	status_code_dict['url17'] = url17_check.status_code
+	status_code_dict['url20'] = url20_check.status_code
 
 	for key, value in status_code_dict.items():
 		print key + ' is ' + str(value)
@@ -235,6 +243,7 @@ def pre_work():
 	page_dirt['url15'] = url15_check.content
 	page_dirt['url16'] = url16_check.content
 	page_dirt['url17'] = url17_check.content
+	page_dirt['url20'] = url20_check.content
 
 	#localize the page 
 	with open('url1_page.html', 'w+') as f:
@@ -281,6 +290,8 @@ def pre_work():
 		f.writelines(url16_check.content)
 	with open('url17_page.html', 'w+') as f:
 		f.writelines(url17_check.content)
+	with open('url20_page.html', 'w+') as f:
+		f.writelines(url20_check.content)
 
 #each website's crawler
 def xici():
@@ -592,6 +603,24 @@ def superfastip():
 		for i in superfastip_text_list:
 			f.writelines(i)
 
+def coderbusy():
+	name = sys._getframe().f_code.co_name
+
+	with open('url20_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+
+	soup = soup.find('table', attrs={'class': re.compile('table proxy-server-table')})
+	soup = re.sub('<span class=".*?"></span>', '', str(soup))
+	soup = re.sub('\s', '', str(soup))
+	soup = re.sub('</tr>', '</tr>\n', str(soup))
+	soup = re.sub('</td>', '</td>-', str(soup))
+	infor = BeautifulSoup(soup, 'lxml')
+	coderbusy_text_list.append(infor.get_text().encode('utf-8'))
+
+	with open(name + '.txt', 'w+') as f:
+		for i in coderbusy_text_list:
+			f.writelines(i)
+
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -604,7 +633,7 @@ def output_format(target_list, current_function_name):
 	workbook.save('12.xls')
 			
 if __name__ == '__main__':
-	pre_work()
+	#pre_work()
 	#xici()
 	#kuaidaili()
 	#httpdaili()
@@ -621,4 +650,5 @@ if __name__ == '__main__':
 	#yundaili()
 	#httpsdaili()
 	#iphai()
-	superfastip()
+	#superfastip()
+	coderbusy()
