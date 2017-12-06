@@ -34,6 +34,7 @@ url17 = 'http://www.superfastip.com/'
 url18 = 'http://www.xsdaili.com/'						#lack
 url19 = 'http://www.meiridaili.com/'					#lack
 url20 = 'https://proxy.coderbusy.com/zh-cn/classical/anonymous-type/anonymous.aspx'
+url21 = 'http://47.94.199.58:8080/proxyipcenter/proxyCenter/proxy/list'
 
 #simple of each website headers
 header_xici = {
@@ -138,6 +139,18 @@ header_coderbusy = {
 	
 }
 
+header_iwfreevpn = {
+	'Host': '47.94.199.58:8080',
+	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0',
+	'Accept': 'application/json, text/javascript, */*; q=0.01',
+	'Accept-Language': 'zh,zh-CN;q=0.8,en-US;q=0.5,en;q=0.3',
+	'Referer': 'http://www.iwfreevpn.top/',
+	'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+	'Origin': 'http://www.iwfreevpn.top'
+}
+
+post_iwfreevpn = {'size': '10', 'page': '0', 'sort': 'newest_date%2Cdesc'}
+
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
@@ -162,6 +175,7 @@ httpsdaili_text_list = list()
 iphai_text_list = list()
 superfastip_text_list = list()
 coderbusy_text_list = list()
+iwfreevpn_text_list = list()
 
 #function of check & get the website
 def pre_work():
@@ -188,6 +202,7 @@ def pre_work():
 	url16_check = requests.get(url16, headers= header_iphai)
 	url17_check = requests.get(url17, headers= header_superfastip)
 	url20_check = requests.get(url20, headers= header_coderbusy)
+	url21_check = requests.post(url21, headers= header_iwfreevpn, data= json.dumps(post_iwfreevpn))
 
 
 	#dict for store the status_code
@@ -214,6 +229,7 @@ def pre_work():
 	status_code_dict['url16'] = url16_check.status_code
 	status_code_dict['url17'] = url17_check.status_code
 	status_code_dict['url20'] = url20_check.status_code
+	status_code_dict['url21'] = url21_check.status_code
 
 	for key, value in status_code_dict.items():
 		print key + ' is ' + str(value)
@@ -244,6 +260,7 @@ def pre_work():
 	page_dirt['url16'] = url16_check.content
 	page_dirt['url17'] = url17_check.content
 	page_dirt['url20'] = url20_check.content
+	page_dirt['url21'] = url21_check.content
 
 	#localize the page 
 	with open('url1_page.html', 'w+') as f:
@@ -292,6 +309,8 @@ def pre_work():
 		f.writelines(url17_check.content)
 	with open('url20_page.html', 'w+') as f:
 		f.writelines(url20_check.content)
+	with open('url21_page.html', 'w+') as f:
+		f.writelines(url21_check.content)
 
 #each website's crawler
 def xici():
@@ -621,6 +640,18 @@ def coderbusy():
 		for i in coderbusy_text_list:
 			f.writelines(i)
 
+def iwfreevpn():
+	name = sys._getframe().f_code.co_name
+
+	with open('url21_page.html', 'r') as f:
+		raw_dict =  json.loads(f.read())
+	raw_list =  raw_dict['data']['content']
+	for i in raw_list:
+		final_output =  str(i['ip']) + '-' + str(i['port']) + '-' + i['country'].encode('utf-8') + '\n'
+		iwfreevpn_text_list.append(final_output)
+	with open(name + '.txt', 'w+') as f:
+		f.writelines(iwfreevpn_text_list)
+
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -651,4 +682,5 @@ if __name__ == '__main__':
 	#httpsdaili()
 	#iphai()
 	#superfastip()
-	coderbusy()
+	#coderbusy()
+	iwfreevpn()
