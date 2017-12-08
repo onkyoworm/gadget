@@ -35,6 +35,7 @@ url18 = 'http://www.xsdaili.com/'						#lack
 url19 = 'http://www.meiridaili.com/'					#lack
 url20 = 'https://proxy.coderbusy.com/zh-cn/classical/anonymous-type/anonymous.aspx'
 url21 = 'http://47.94.199.58:8080/proxyipcenter/proxyCenter/proxy/list'
+url22 = 'https://www.hvaexlove.com/'
 
 #simple of each website headers
 header_xici = {
@@ -151,11 +152,15 @@ header_iwfreevpn = {
 
 post_iwfreevpn = {'size': '10', 'page': '0', 'sort': 'newest_date%2Cdesc'}
 
+header_hvaexlove = {
+	
+}
+
 #some global variable
 status_code_dict = dict()
 page_dirt = dict()
 
-total_text_list = list()
+sum_raw_text_list = list()
 
 xici_text_list = list()
 kuaidaili_text_list = list()
@@ -176,6 +181,8 @@ iphai_text_list = list()
 superfastip_text_list = list()
 coderbusy_text_list = list()
 iwfreevpn_text_list = list()
+hvaexlove_text_list = list()
+
 
 #function of check & get the website
 def pre_work():
@@ -203,6 +210,7 @@ def pre_work():
 	url17_check = requests.get(url17, headers= header_superfastip)
 	url20_check = requests.get(url20, headers= header_coderbusy)
 	url21_check = requests.post(url21, headers= header_iwfreevpn, data= json.dumps(post_iwfreevpn))
+	url22_check = requests.get(url22, headers = header_hvaexlove)
 
 
 	#dict for store the status_code
@@ -230,6 +238,7 @@ def pre_work():
 	status_code_dict['url17'] = url17_check.status_code
 	status_code_dict['url20'] = url20_check.status_code
 	status_code_dict['url21'] = url21_check.status_code
+	status_code_dict['url22'] = url22_check.status_code
 
 	for key, value in status_code_dict.items():
 		print key + ' is ' + str(value)
@@ -261,6 +270,7 @@ def pre_work():
 	page_dirt['url17'] = url17_check.content
 	page_dirt['url20'] = url20_check.content
 	page_dirt['url21'] = url21_check.content
+	page_dirt['url22'] = url22_check.content
 
 	#localize the page 
 	with open('url1_page.html', 'w+') as f:
@@ -311,6 +321,8 @@ def pre_work():
 		f.writelines(url20_check.content)
 	with open('url21_page.html', 'w+') as f:
 		f.writelines(url21_check.content)
+	with open('url22_page.html', 'w+') as f:
+		f.writelines(url22_check.content)
 
 #each website's crawler
 def xici():
@@ -352,18 +364,15 @@ def kuaidaili():
 		infor_soup = BeautifulSoup(str(i), 'lxml')
 		if len(infor_soup.get_text()) > 1:
 			ii = BeautifulSoup(str(infor_soup).replace('</td>\n', '</td>-'), 'lxml')
-			ip_list.append(ii)
+			ip_list.append(ii) 
+
 	for i in infor_2.children:
 		infor_soup = BeautifulSoup(str(i), 'lxml')
 		if len(infor_soup.get_text()) > 1:
 			ii = BeautifulSoup(str(infor_soup).replace('</td>\n', '</td>-'), 'lxml')
 			ip_list.append(ii)
-			#print ii.get_text()
 
 	for i in ip_list:
-		# if str(i.get_text().encode('utf-8')).strip() != None:
-		# 	kuaidaili_text_list.append(str(i.get_text().encode('utf-8')).strip())
-		# 	print(i.get_text().encode('utf-8')).strip()
 		kuaidaili_text_list.append(str(i.get_text().encode('utf-8')))
 	with open(name + '.txt', 'w+') as f:
 		for i in kuaidaili_text_list:
@@ -432,18 +441,19 @@ def xdaili():
 def data5u():
 	name = sys._getframe().f_code.co_name  
 
-	for ii in range(1, 6):
-		mesg_name = 'url6_' + str(ii) + '_page.html'
-		with open(mesg_name, 'r') as f:
-			raw_dict = json.loads(f.read())
-			raw_list = raw_dict['RESULT']['rows']  
-		for i in raw_list:
-			#'{0}-{1}-{2}-{3}-{4}-{5}-{6}'.format(i['ip'],i['port'],i['position'],i['anony'],i['responsetime'],i['validatetime'],i['type'])
-			final_text = i['ip']+'-'+i['port']+'-'+i['position']+'-'+i['anony']+'-'+i['responsetime']+'-'+i['validatetime']+'-'+i['type']+'-'+i['post']
-			data5u_text_list.append(final_text)
-	with open(name + '.txt', 'w+') as f:
-		for i in data5u_text_list:
-			f.writelines(i.encode('utf-8') + '\n')
+	# for ii in range(2, 6):
+	# 	mesg_name = 'url6_' + str(ii) + '_page.html'
+	# 	with open(mesg_name, 'r') as f:
+	# 		raw_dict = json.loads(str(f))
+	# 		raw_list = raw_dict['RESULT']['rows']  
+	# 	for i in raw_list:
+	# 		final_text = i['ip']+'-'+i['port']+'-'+i['position']+'-'+i['anony']+'-'+i['responsetime']+'-'+i['validatetime']+'-'+i['type']+'-'+i['post']
+	# 		data5u_text_list.append(final_text)
+	# with open(name + '.txt', 'w+') as f:
+	# 	for i in data5u_text_list:
+	# 		f.writelines(i.encode('utf-8') + '\n')
+	with open('url6_2_page.html', 'r') as f:
+		print f.read()
 
 def goubanjia():
 	name = sys._getframe().f_code.co_name
@@ -462,12 +472,11 @@ def goubanjia():
 		i = kill_space.sub("", str(i))
 		i = format_output.sub('</td>-', str(i))
 		infor_soup = BeautifulSoup(str(i), 'lxml')
-		#ip_list.append(infor_soup)
-		goubanjia_text_list.append(infor_soup)
-		print infor_soup.get_text()
+		goubanjia_text_list.append(infor_soup.get_text().encode('utf-8'))
+		#print infor_soup.get_text()
 	with open(name + '.txt', 'w+') as f:
 		for i in goubanjia_text_list:
-			f.writelines(str(i.get_text().encode('utf-8')).strip())
+			f.writelines(i)
 
 def ip181():
 	name = sys._getframe().f_code.co_name
@@ -497,6 +506,7 @@ def proxy360():
 		ii = re.sub('\s', '', str(i))
 		ii = BeautifulSoup(ii.replace('','').replace('</','-</'), 'lxml')
 		proxy360_text_list.append(ii.spanclass.get_text().encode('utf-8'))
+		print ii.get_text()
 
 	with open(name + '.txt', 'w+') as f:
 		for i in proxy360_text_list:
@@ -528,6 +538,7 @@ def baizhongshou():
 	infor = str(infor).replace(':', '-')
 	infor = str(infor).replace('</td>', '-</td>')
 	infor_soup = BeautifulSoup(infor, 'lxml')
+	baizhongsou_text_list.append(infor_soup.get_text().encode('utf-8'))
 	with open(name + '.txt', 'w+') as f:
 		f.writelines(str(infor_soup.get_text().encode('utf-8')))
 
@@ -539,10 +550,10 @@ def pcdaili():
 	infor = soup.find('table', attrs={'class': re.compile('table table-striped')})
 	for i in infor.children:
 		infor_soup = BeautifulSoup(str(i).replace('</td>\n', '</td>-'), 'lxml')
-		pcdaili_text_list.append(infor_soup)
+		pcdaili_text_list.append(infor_soup.get_text().encode('utf-8'))
 	with open(name + '.txt', 'w+') as f:
 		for i in pcdaili_text_list:
-			f.writelines(str(i.get_text().encode('utf-8')))
+			f.writelines(i)
 
 def nianshao():
 	name = sys._getframe().f_code.co_name
@@ -550,13 +561,9 @@ def nianshao():
 	with open('url13_page.html', 'r') as f:
 		soup = BeautifulSoup(f, 'lxml')
 	infor = soup.find('table', attrs={'class': re.compile('table')})
-	# ii = str(infor).replace('</td>\n', '</td>-\r\n')
-	# ii = BeautifulSoup(ii, 'lxml')
-	# print ii.get_text()
 	for i in infor.children:
 		infor_soup = BeautifulSoup(str(i).replace('</td>\n', '</td>-'), 'lxml')
 		nianshao_text_list.append(infor_soup.get_text().encode('utf-8'))
-		print infor_soup.get_text()
 
 	with open(name + '.txt', 'w+') as f:
 		for i in nianshao_text_list:
@@ -652,6 +659,71 @@ def iwfreevpn():
 	with open(name + '.txt', 'w+') as f:
 		f.writelines(iwfreevpn_text_list)
 
+def hvaexlove():
+	name = sys._getframe().f_code.co_name
+
+	with open('url22_page.html', 'r') as f:
+		soup = BeautifulSoup(f, 'lxml')
+	infor = soup.find('table')
+	infor = str(infor).replace('</td>\n', '</td->')
+	infor = BeautifulSoup(infor, 'lxml')
+	hvaexlove_text_list.append(infor.get_text().encode('utf-8'))
+
+	with open(name + '.txt', 'w+') as f:
+		for i in header_hvaexlove:
+			f.writelines(i)
+
+def test_output():
+	# for i in xici_text_list:
+	# 	print i
+	# for i in kuaidaili_text_list:
+	# 	print i
+	# for i in httpdaili_text_list:
+	# 	print i
+	# for i in ip66_text_list:
+	# 	print i
+	# for i in xdaili_text_list:
+	# 	print i 
+	# data5u_text_list 
+	# for i in goubanjia_text_list:
+	# 	print i 
+	# for i in ip181_text_list:
+	# 	print i
+	# for i in proxy360_text_list:
+	# 	print i
+	# for i in ip3366_text_list:
+	# 	print i 
+	# for i in baizhongsou_text_list:
+	# 	print i
+	# for i in pcdaili_text_list:
+	# 	print i 
+	# for i in nianshao_text_list:
+	# 	print i 
+	# for i in yundaili_text_list:
+	# 	print i 
+	# for i in httpsdaili_text_list:
+	# 	print i 
+	# for i in iphai_text_list:
+	# 	print i 
+	# for i in superfastip_text_list:
+	# 	print i 
+	# for i in coderbusy_text_list:
+	# 	print i 
+	# for i in iwfreevpn_text_list:
+	# 	print i 
+	# for i in hvaexlove_text_list:
+	# 	print i
+	pass 
+
+def sum_raw_text():
+	name = sys._getframe().f_code.co_name
+
+	#Use for sum the information from other list 
+	#But not all list in a format
+	#So we have to dispose it first
+	#We will show each list's format & how we deal with it below
+
+	
 
 #define the format of output
 def output_format(target_list, current_function_name):
@@ -662,25 +734,30 @@ def output_format(target_list, current_function_name):
 			for j in range(len(target_list)):
 				worksheet.write(i, j, target.get_text())
 	workbook.save('12.xls')
+
+
 			
 if __name__ == '__main__':
 	#pre_work()
-	#xici()
-	#kuaidaili()
-	#httpdaili()
-	#ip66()
-	#xdaili()
+	#xici()			-
+	#kuaidaili()    -
+	#httpdaili()	-
+	#ip66()			-
+	#xdaili()		-
 	#data5u()
-	#goubanjia()
-	#ip181()
+	#goubanjia()	-
+	#ip181()		-
 	#proxy360()
-	#ip3366()
-	#baizhongshou()
-	#pcdaili()
-	#nianshao()
-	#yundaili()
-	#httpsdaili()
-	#iphai()
-	#superfastip()
-	#coderbusy()
-	iwfreevpn()
+	#ip3366()		-
+	#baizhongshou()	-
+	#pcdaili()		-
+	#nianshao()		-
+	#yundaili()		-
+	#httpsdaili()	-
+	#iphai()		-
+	#superfastip()	-
+	#coderbusy()	-
+	#iwfreevpn()	-
+	#hvaexlove()	-
+
+	#test_output()
